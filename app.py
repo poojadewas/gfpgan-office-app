@@ -2,7 +2,7 @@ import replicate
 import os
 from flask import Flask, render_template, request
 
-# Set your Replicate API token securely
+# Use token from environment variable
 os.environ["REPLICATE_API_TOKEN"] = os.getenv("REPLICATE_API_TOKEN")
 
 app = Flask(__name__)
@@ -26,4 +26,4 @@ def index():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(debug=True, host="0.0.0.0", port=port)
