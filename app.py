@@ -1,30 +1,42 @@
-from flask import Flask, render_template, request
 import os
-import replicate
+from flask import Flask, request, render_template
+import requests
+from dotenv import load_dotenv
 
-app = Flask(__name__, static_url_path='', static_folder='static')
+app = Flask(__name__)
+load_dotenv()
 
-# Ensure upload folder exists on server (Render or local)
-os.makedirs("static/uploads", exist_ok=True)
+# Load Hugging Face API Token
+API_TOKEN = os.getenv("HUGGINGFACE_API_TOKEN")
+API_URL = "https://api-inference.huggingface.co/models/TencentARC/GFPGAN"
+HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
 
-@app.route("/", methods=["GET", "POST"])
+# Home route
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    output_url = None
+    output_image = None
 
-    if request.method == "POST":
-        image = request.files["image"]
-        upload_path = os.path.join("static", "uploads", image.filename)
-        image.save(upload_path)
+    if request.method == 'POST':
+        image = request.files['image']
+        upload_folder = os.path.join('static', 'uploads')
+        os.makedirs(upload_folder, exist_ok=True)
 
-        # Create the full URL for the hosted image
-        image_url = f"https://gfpgan-office-app.onrender.com/{upload_path}"
+        input_path = os.path.join(upload_folder, image.filename)
+        output_path = os.path.join(upload_folder, f"restored_{image.filename}")
+        image.save(input_path)
 
-        # Call Replicate API with the public image URL
-        output = replicate.run(
-            "tencentarc/gfpgan:0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c",
-            input={"img": image_url}
-        )
+        with open(input_path, 'rb') as f:
+            response = requests.post(API_URL, headers=HEADERS, data=f)
 
-        output_url = output  # usually a list of image URLs
+        if response.status_code == 200:
+            with open(output_path, 'wb') as out:
+                out.write(response.content)
+            output_image = output_path
+        else:
+            return f"Error from Hugging Face API: {response.status_code} - {response.text}"
 
-    return render_template("index.html", output_url=output_url)
+    return render_template("index.html", output_image=output_image)
+
+# Needed for gunicorn deployment
+if __name__ == '__main__':
+    app.run(debug=True)
