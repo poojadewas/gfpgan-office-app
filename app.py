@@ -12,10 +12,10 @@ def index():
         image = request.files["image"]
         image.save("input.jpg")
 
-        output_url = replicate.run(
-            "tencentarc/gfpgan",
-            input={"img": open("input.jpg", "rb")}
-        )
+      output_url = replicate.run(
+    "tencentarc/gfpgan:0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c",
+    input={"img": open("input.jpg", "rb")}
+)
 
         return render_template("index.html", output_url=output_url)
     return render_template("index.html", output_url=None)
