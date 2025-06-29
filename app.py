@@ -14,15 +14,17 @@ def index():
     if request.method == "POST":
         # Save uploaded image
         image = request.files["image"]
-        image.save("input.jpg")
+        image_path = "input.jpg"
+        image.save(image_path)
 
         # Run Replicate model
-        output_url = replicate.run(
-            "tencentarc/gfpgan:0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c",
-            input={"img": open("input.jpg", "rb")}
-        )
+        with open(image_path, "rb") as img_file:
+            output_url = replicate.run(
+                "tencentarc/gfpgan:0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c",
+                input={"img": img_file}
+            )
 
     return render_template("index.html", output_url=output_url)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
