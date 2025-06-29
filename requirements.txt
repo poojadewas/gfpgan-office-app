@@ -1,4 +1,4 @@
 flask
-replicate
 requests
-werkzeug
+python-dotenv
+gunicorn
