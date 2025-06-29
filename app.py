@@ -1,24 +1,21 @@
-import replicate
 import os
+import replicate
 from flask import Flask, render_template, request
 
-# Set your Replicate API token
-os.environ["REPLICATE_API_TOKEN"] = "r8_Af1yG4vRtHf7BVS47ZalRdSVZYttdQX0qdmdR"
+# Safely access API token from environment variable
+if not os.environ.get("REPLICATE_API_TOKEN"):
+    raise Exception("Missing REPLICATE_API_TOKEN environment variable.")
 
 app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     output_url = None
-
     if request.method == "POST":
-        # Save uploaded image
         image = request.files["image"]
-        image_path = "input.jpg"
-        image.save(image_path)
+        image.save("input.jpg")
 
-        # Run Replicate model
-        with open(image_path, "rb") as img_file:
+        with open("input.jpg", "rb") as img_file:
             output_url = replicate.run(
                 "tencentarc/gfpgan:0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c",
                 input={"img": img_file}
@@ -27,4 +24,4 @@ def index():
     return render_template("index.html", output_url=output_url)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(debug=True)
