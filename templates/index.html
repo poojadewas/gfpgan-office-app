@@ -1,17 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-    <title>Photo Enhancer | Pooja Colour Lab</title>
+    <title>Face Restoration App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f7f7f7;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        img {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Upload Photo to Enhance with AI</h2>
+    <h1>Upload a Face Image</h1>
     <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="image" required>
-        <button type="submit">Enhance</button>
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Restore Face</button>
     </form>
-    {% if output_url %}
-        <h3>Enhanced Image:</h3>
-        <img src="{{ output_url }}" width="300">
+
+    {% if output_image %}
+        <h2>Restored Output:</h2>
+        <img src="{{ output_image }}" width="400">
     {% endif %}
 </body>
 </html>
