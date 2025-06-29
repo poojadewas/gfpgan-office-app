@@ -1,34 +1,18 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-    <title>Face Restoration App</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 40px;
-            background: #f7f7f7;
-        }
-        h1 {
-            color: #333;
-        }
-        form {
-            margin-bottom: 20px;
-        }
-        img {
-            border: 1px solid #ccc;
-            border-radius: 10px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <title>Face Restoration (Hugging Face)</title>
 </head>
 <body>
     <h1>Upload a Face Image</h1>
     <form method="POST" enctype="multipart/form-data">
         <input type="file" name="image" accept="image/*" required>
-        <button type="submit">Restore Face</button>
+        <button type="submit">Restore</button>
     </form>
 
     {% if output_image %}
-        <h2>Restored Output:</h2>
+        <h2>Restored Image:</h2>
         <img src="{{ output_image }}" width="400">
     {% endif %}
 </body>
